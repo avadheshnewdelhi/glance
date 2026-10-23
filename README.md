@@ -77,13 +77,14 @@ Tested on macOS 27 with a MacBook built-in display and an external monitor to it
 - **Focus switching in the sandbox**, both with and without Accessibility. The correct app came to front on each display and the pointer followed.
 - **Display wake from the sandbox:** after `pmset displaysleepnow`, Glance's wake call turned the displays back on.
 - **Network blocked:** a request from the sandboxed build failed as expected.
-- **Running app:** Glance runs in the menu bar with camera access. The icon showed it tracking a live face on the built-in display.
+- **Live camera, end to end:** in about two minutes of turning between the two displays, Glance logged 52 focus switches. Each one went to the display being looked at, alternating correctly, with switches as little as ~0.7 s apart. Head yaw was about −0.8 to −1.0 rad facing the external monitor and about 0 to +0.2 rad facing the built-in display. Pupil offset stayed near 0, so head turn carries the signal.
 
 ### Not yet verified
 
-- A live, logged focus switch driven by the real camera. To check one, run `log stream --predicate 'subsystem == "local.glance"'` and look between displays.
 - Leaving and returning to the seat with the live camera, including waking the displays. The logic is unit-tested and the wake call was tested separately, but not together.
 - Three or more displays, lid closed with an external webcam, Continuity Camera, and several people in view.
+
+To watch Glance's decisions live, run `/usr/bin/log stream --predicate 'subsystem == "local.glance"'`. Each switch prints a line like "Glance focused HP Z24n G3 because you looked there". In zsh, plain `log` is a built-in shell command, so use the full path.
 
 ## Limitations
 
