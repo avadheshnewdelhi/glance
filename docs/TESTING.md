@@ -30,6 +30,7 @@ On macOS 27 with a MacBook's built-in display and an external monitor to its rig
 - **Waking displays from the sandbox:** after `pmset displaysleepnow`, Glance's wake call turned the displays back on.
 - **No network:** a request from the sandboxed build was blocked.
 - **Release DMG:** ad hoc signature valid, no team ID, and no build paths or personal strings in the app bundle.
+- **Homebrew cask:** install (adopting an existing manual install), `brew upgrade` from 1.0.0 to 1.0.1, uninstall and reinstall. Homebrew quit the running app before upgrading and reopened it after; no quarantine flag remained. `brew style` passes. `brew audit` was not run, because it needs newer Command Line Tools than this Mac had.
 
 ## Not verified yet
 

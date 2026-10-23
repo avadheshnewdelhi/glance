@@ -31,6 +31,14 @@ Everything runs on your Mac. Glance has no network access at all, and macOS enfo
 
 ## Install
 
+### Homebrew (recommended)
+
+```sh
+brew install --cask avadheshnewdelhi/tap/glance
+```
+
+Homebrew verifies the download's checksum and installs Glance ready to open, without the "Open Anyway" step below.
+
 ### Download
 
 1. Download **[Glance.dmg](https://github.com/avadheshnewdelhi/glance/releases/latest/download/Glance.dmg)** from the [latest release](https://github.com/avadheshnewdelhi/glance/releases/latest).
@@ -40,6 +48,16 @@ Everything runs on your Mac. Glance has no network access at all, and macOS enfo
    - in Terminal, run `xattr -dr com.apple.quarantine /Applications/Glance.app`.
 
 Prefer to check before running it? The release notes list the DMG's SHA-256 checksum. You can also build the same app yourself from source (below).
+
+### Update and uninstall
+
+| | Homebrew | Manual install |
+|---|---|---|
+| **Update** | `brew upgrade --cask glance` | Download the latest `Glance.dmg` and replace the app in Applications |
+| **Uninstall** | `brew uninstall --cask glance` | Quit Glance, then drag it from Applications to the Bin |
+| **Also remove calibration and settings** | `brew uninstall --zap --cask glance` | Delete `~/Library/Containers/local.glance` |
+
+Glance never checks for updates itself, because it has no network access. Watch or star this repo to hear about new releases. Each new version has a new signature, so macOS asks for camera access again after an update.
 
 ### Build from source
 
@@ -117,7 +135,7 @@ flowchart LR
 - **Light and camera position matter.** In dim light or with heavy glare on glasses, faces can be missed. Switching then pauses until you're found again.
 - **The camera keeps the Mac awake.** While the camera runs, macOS won't sleep. That includes **Wake Displays When I Return** keeping it on while the screens are asleep.
 - **With 4 or more displays, the icon is approximate.** The menu always names the focused display exactly.
-- **Not notarized and no launch at login (yet).** See [Install](#install) for the one-time "Open Anyway" step. Each new version is a new unsigned build, so macOS asks for camera access again after an update.
+- **Not notarized and no launch at login (yet).** A manual download needs a one-time "Open Anyway" step; Homebrew installs skip it (see [Install](#install)). Each new version has a new signature, so macOS asks for camera access again after an update.
 
 ## Development
 
@@ -125,7 +143,10 @@ flowchart LR
 swift test       # unit tests for the gaze, calibration and presence logic
 ./build.sh       # build/Glance.app (uses your Apple Development identity if you have one, otherwise ad hoc)
 ./package.sh     # build/Glance.dmg, ad hoc signed
+scripts/release.sh   # publish: tag, GitHub release with the DMG, and update the Homebrew cask
 ```
+
+To release, bump `CFBundleShortVersionString` in `Resources/Info.plist`, add a matching section to `CHANGELOG.md`, commit, then run `scripts/release.sh`.
 
 Watch Glance's decisions live:
 
@@ -141,6 +162,7 @@ In zsh, plain `log` is a built-in shell command, so use the full path.
 | `Sources/GlanceCore` | Pure logic with no UI: calibration, the gaze tracker, presence |
 | `Sources/Glance` | The app: camera and Vision, focusing, calibration overlay, menu, icon |
 | `Tests/GlanceCoreTests` | Unit tests for `GlanceCore` |
+| `scripts/release.sh` | Publishes a release and updates the [Homebrew tap](https://github.com/avadheshnewdelhi/homebrew-tap) |
 | `scripts/make-icon.swift` | Draws the app icon and writes `Resources/AppIcon.icns` |
 | `docs/TESTING.md` | What's tested automatically, what was verified by hand, and what hasn't been yet |
 
