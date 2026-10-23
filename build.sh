@@ -9,6 +9,8 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS"
 cp "$(swift build -c release --show-bin-path)/Glance" "$APP/Contents/MacOS/"
 cp Resources/Info.plist "$APP/Contents/"
+# Drop debug symbols: they hold absolute build paths (e.g. /Users/<you>/...) that shouldn't ship.
+strip -S -x "$APP/Contents/MacOS/Glance"
 
 # A real signing identity keeps the camera/Accessibility grants across rebuilds; ad-hoc ("-") works too.
 IDENTITY="${CODESIGN_IDENTITY:-$(security find-identity -p codesigning -v | awk -F'"' '/Apple Development|Developer ID Application/ {print $2; exit}')}"

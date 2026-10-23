@@ -1,100 +1,150 @@
-# Glance
+<h1 align="center">Glance</h1>
 
-A macOS menu bar utility that watches where you look, using the Mac's camera, and moves focus to that display.
-If you turn toward the monitor on your right, the frontmost window there gets keyboard focus. The same goes for a monitor on the left.
+<p align="center"><b>Look at a screen. It gets focus.</b></p>
 
-## Build & run
+<p align="center">
+  <a href="https://github.com/avadheshnewdelhi/glance/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/avadheshnewdelhi/glance"></a>
+  <a href="https://github.com/avadheshnewdelhi/glance/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/avadheshnewdelhi/glance/actions/workflows/ci.yml/badge.svg"></a>
+  <img alt="macOS 14+" src="https://img.shields.io/badge/macOS-14%2B-black?logo=apple">
+  <img alt="Swift" src="https://img.shields.io/badge/Swift-5.10%2B-orange?logo=swift&logoColor=white">
+  <img alt="100% on-device" src="https://img.shields.io/badge/network-none-success">
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue"></a>
+</p>
 
-Needs macOS 14 or later and Xcode (or the Swift toolchain).
+You turn to your external monitor and start typing, and the text goes into a window on your laptop screen, because focus stayed where you last clicked.
+
+**Glance** is a tiny macOS menu bar app that fixes that. It uses your Mac's camera to see which display you're facing and gives that display keyboard focus. Turn right, and the window on your right monitor is ready for typing. Turn back, and focus comes with you.
+
+Everything runs on your Mac. Glance has no network access at all, and macOS enforces that, not just a promise.
+
+<p align="center"><img src="docs/icon-states.png" alt="Glance's menu bar icon: an eye whose pupil glances toward the focused display" width="660"></p>
+
+## Features
+
+- **Focus follows your gaze.** Turn toward a display and its frontmost window gets keyboard focus. Optionally, the pointer jumps there too, so scrolling works straight away.
+- **Instant by default.** Focus switches about two camera frames (~0.17 s) after you turn. Hysteresis stops it flickering when you look near the edge between two screens. Prefer a pause first? Choose 0.2, 0.4 or 0.8 s.
+- **Knows when you've left.** If no one is in view for 5 seconds, switching pauses. It resumes the moment you sit back down.
+- **Wakes your displays when you return** (optional). If the screens went to sleep while you were away, they turn on as soon as the camera sees you.
+- **Any arrangement.** Left, right, or several displays side by side. A 10-second calibration learns where each screen is for you.
+- **An icon that glances back.** The eye in the menu bar looks toward the display that has focus.
+- **Private by design.** Camera frames are analysed in memory and thrown away. No network, no recordings, no screen recording permission.
+
+## Install
+
+### Download
+
+1. Download **`Glance-x.y.z.dmg`** from the [latest release](https://github.com/avadheshnewdelhi/glance/releases/latest).
+2. Open the DMG and drag **Glance** into **Applications**.
+3. Open Glance. The first time, macOS will say it can't verify the developer, because Glance is a free open-source app that isn't notarized by Apple. To allow it:
+   - open **System Settings › Privacy & Security**, scroll down and click **Open Anyway** next to the Glance message; **or**
+   - in Terminal, run `xattr -dr com.apple.quarantine /Applications/Glance.app`.
+
+Prefer to check before running it? The release notes list the DMG's SHA-256 checksum. You can also build the same app yourself from source (below).
+
+### Build from source
+
+Needs macOS 14 or later and Xcode 15 or later (or a Swift 5.10+ toolchain).
 
 ```sh
-./build.sh                 # builds and signs build/Glance.app
-open build/Glance.app   # or copy it to /Applications first
-swift test                 # unit tests for the gaze logic
+git clone https://github.com/avadheshnewdelhi/glance.git
+cd glance
+./build.sh             # builds and signs build/Glance.app
+open build/Glance.app
 ```
 
-On first launch macOS asks for camera access. Glance then runs a short calibration: a dot appears on each display in turn, and you look at it the way you normally look at that display. Recalibrate from the menu after you move a monitor or your seat. If you connect a different set of displays or rearrange them, it asks you to calibrate again.
+`./package.sh` builds the same DMG that's published on the releases page.
 
-## Menu
+## Getting started
 
-- **Pause / Resume Tracking**: turns the camera off or back on.
-- **Recalibrate…**
-- **Switch Delay**: how long you must keep looking at a display before focus moves. The default, Instant, switches about two camera frames (~0.17 s) after your gaze crosses over; 0.2, 0.4 and 0.8 s are also available.
-- **Move Pointer With Focus**: puts the mouse pointer on the newly focused window, so scrolling works there too.
-- **Wake Displays When I Return** (on by default): if the displays went to sleep while you were away, they wake as soon as the camera sees you again.
-- **Raise Exact Window (optional, needs Accessibility)**: without this permission, Glance activates the *app* that owns the frontmost window on that display. That's right unless one app has windows on both displays (for example two Chrome windows). In that case, grant Accessibility so the exact window is raised.
+1. **Allow camera access** when macOS asks.
+2. **Calibrate.** A dot appears on each display in turn. Look at it the way you normally look at that screen, for about two seconds each.
+3. **Work normally.** Turn toward a screen and it gets focus. The menu shows which display Glance thinks you're on.
 
-## Menu bar icon
+Tip: **turn your head, at least a little.** A webcam can see a head turn much more reliably than eyes moving alone. If two displays look too similar during calibration, Glance will ask you to turn a bit more.
 
-The icon is an eye drawn in code (`GlanceIcon.swift`) as a template image, so macOS tints it for light and dark menu bars.
+Recalibrate from the menu whenever you move a monitor or your chair. If you plug in a different set of displays, Glance asks you to calibrate for them.
 
-| Icon | Meaning |
+## The menu
+
+| Item | What it does |
 |---|---|
-| Eye, solid pupil | Tracking. The pupil glances toward the focused display: far left for the leftmost display, far right for the rightmost, evenly spaced in between. |
-| Eye, hollow pupil | Tracking, but no face in view |
-| Closed eye with lashes | Paused, away from the seat, or only one display connected |
-| Eye with "!" | Needs calibration or camera access |
+| **Pause / Resume Tracking** | Turns the camera off or back on. |
+| **Recalibrate…** | Re-learns where your displays are. |
+| **Switch Delay** | Instant (default), 0.2 s, 0.4 s or 0.8 s. How long you must face a display before it gets focus. |
+| **Move Pointer With Focus** | Moves the mouse pointer to the newly focused window. |
+| **Wake Displays When I Return** | Keeps the camera on while the displays sleep, so it can wake them when you're back. |
+| **Raise Exact Window** | Optional, needs Accessibility. Raises the exact window rather than just its app. Useful when one app has windows on several displays. |
 
-## Privacy & system access
+## Privacy
 
-- **No network, enforced by macOS.** The app runs in the App Sandbox and has no network entitlement, so the OS blocks every connection attempt. Check this yourself with `codesign -d --entitlements - build/Glance.app`. It lists only `app-sandbox` and `device.camera`.
-- **Camera frames never leave memory.** Each frame goes through Apple's on-device Vision face landmarks (head yaw plus pupil position) and is then discarded. Nothing is recorded or written to disk. Only the calibration numbers (a few floats per display) are saved in the app's sandbox container.
-- **The camera only runs when it's useful.** It stays off with one display, while paused, and while another user is logged in at the console. While the displays are asleep or the screen is locked, it stays on only if **Wake Displays When I Return** is enabled. A running camera also keeps the Mac from sleeping, so turn that option off if you'd rather the Mac sleep when the displays do.
-- **Away detection.** If no face is seen for 5 seconds, Glance pauses switching and drops to 4 analysed frames per second. It resumes on the first frame that sees you again.
-- **Window info is minimal.** To find the window to focus, the app reads only the owner and bounds of on-screen windows, never titles or contents. It doesn't need Screen Recording permission.
+Glance needs a camera to work, so it's built to deserve that trust.
+
+- **No network access, enforced by macOS.** Glance runs in Apple's App Sandbox *without* the network entitlement, so the operating system blocks every connection it might try. Check it yourself:
+  ```sh
+  codesign -d --entitlements - /Applications/Glance.app
+  ```
+  The only entitlements are `app-sandbox` and `device.camera`.
+- **Frames never leave memory.** Each frame goes through Apple's on-device [Vision](https://developer.apple.com/documentation/vision) face landmarks. Glance keeps two numbers from each frame, the head angle and the pupil position, and drops the frame. Nothing is recorded or written to disk except a few calibration numbers per display.
+- **The camera is off when it isn't needed.** It stays off when you pause, with only one display connected, and when another user is logged in. It stays on while the screen is locked or asleep only if you enable **Wake Displays When I Return**.
+- **Minimal window access.** To decide what to focus, Glance reads only which app owns each visible window and where the window is. It never reads titles or contents and doesn't need Screen Recording permission.
+- **Accessibility is optional.** Without it, Glance focuses the right *app*. Grant it only if you want the exact window raised.
 
 ## How it works
 
-1. `GazeCamera` analyses about 12 frames per second. For each frame it records head yaw and the mean horizontal pupil offset within the eyes.
-2. Calibration saves the median of these values for each display, plus their typical spread.
-3. `GazeTracker` smooths incoming samples and picks the nearest display. It only switches when a different display is clearly closer (hysteresis) for the whole switch delay. It acts only on changes, so it never fights you when you click into another display yourself.
-4. `DisplayFocuser` activates the app that owns the frontmost window on the new display. With Accessibility granted, it raises that exact window.
-5. `Presence` marks you as away after 5 s without a face and back on the first face after that. While away, the app can also wake the displays (see the menu option).
+```mermaid
+flowchart LR
+    cam["Camera<br/>~12 frames/s"] --> vision["Vision face landmarks<br/>(on-device)"]
+    vision --> features["Head angle +<br/>pupil position"]
+    features --> tracker["Tracker<br/>smoothing · hysteresis · delay"]
+    calib[("Calibration<br/>per display")] --> tracker
+    tracker -- "you turned to display B" --> focus["Focus frontmost<br/>window on B"]
+    features --> presence["Presence<br/>away after 5 s"]
+    presence -- "you're back" --> wake["Wake displays"]
+```
 
-## Test coverage
-
-### Automated (`swift test`, 12 tests, `GlanceCore` only)
-
-- **Calibration:** fits per-display centroids, rejects too little data or a single display, and survives a JSON round trip.
-- **Tracker:**
-  - the first fix after starting is adopted without moving focus;
-  - a switch happens only after the switch delay, and a brief glance doesn't switch;
-  - jitter at the boundary between displays doesn't flip-flop, at both 0 s and 0.2 s delay;
-  - losing your face resets a pending switch;
-  - Instant switches on the second frame.
-- **Presence:** you're marked away after 5 s, short drop-outs are ignored, and you're back on the first face.
-
-The app target (camera, focusing, calibration UI, menu) has no automated tests.
-
-### Verified manually
-
-Tested on macOS 27 with a MacBook built-in display and an external monitor to its right. These were one-off scripts and aren't part of the repo.
-
-- **Gaze pipeline end to end, sandboxed, with face images instead of the live camera.** Public test portraits and their mirror images went as camera frames through the real `GazeCamera`, calibration, `GazeTracker` and `DisplayFocuser` code.
-  - A turned head gave a yaw of ±0.61 rad, with the face found in 24/24 frames and a calibration separation of 61.
-  - Focus moved to the right display and back. With Instant, the switch came on the 2nd frame.
-  - A near-frontal face gave only a weak signal (separation 2.8), which calibration would reject.
-- **Focus switching in the sandbox**, both with and without Accessibility. The correct app came to front on each display and the pointer followed.
-- **Display wake from the sandbox:** after `pmset displaysleepnow`, Glance's wake call turned the displays back on.
-- **Network blocked:** a request from the sandboxed build failed as expected.
-- **Live camera, end to end:** in about two minutes of turning between the two displays, Glance logged 52 focus switches. Each one went to the display being looked at, alternating correctly, with switches as little as ~0.7 s apart. Head yaw was about −0.8 to −1.0 rad facing the external monitor and about 0 to +0.2 rad facing the built-in display. Pupil offset stayed near 0, so head turn carries the signal.
-
-### Not yet verified
-
-- Leaving and returning to the seat with the live camera, including waking the displays. The logic is unit-tested and the wake call was tested separately, but not together.
-- Three or more displays, lid closed with an external webcam, Continuity Camera, and several people in view.
-
-To watch Glance's decisions live, run `/usr/bin/log stream --predicate 'subsystem == "local.glance"'`. Each switch prints a line like "Glance focused HP Z24n G3 because you looked there". In zsh, plain `log` is a built-in shell command, so use the full path.
+1. **`GazeCamera`** analyses about 12 frames a second (4 while you're away). From each frame it takes your head yaw (left–right angle) and how far your pupils sit from the centre of your eyes.
+2. **Calibration** records the typical values while you look at each display, and how much they wobble.
+3. **`GazeTracker`** smooths the readings and picks the nearest display. It switches only when another display is clearly closer, and it acts only when your gaze *changes*, so it never fights you when you click into another screen yourself.
+4. **`DisplayFocuser`** activates the app that owns the frontmost window on that display. If Accessibility is granted, it raises that exact window.
+5. **`Presence`** marks you away after 5 seconds without a face, and back on the first frame that sees one.
 
 ## Limitations
 
-- **Left and right only.** Glance reads head yaw and horizontal pupil position, so it can't tell apart displays stacked above each other.
-- **Turn your head, at least slightly.** At webcam resolution, eye-only movement gives a weak signal. Calibration rejects displays it can't tell apart and asks you to turn your head more. The more displays side by side, the smaller the turn between neighbours, and the harder they are to separate.
-- **Calibration is tied to your setup.** It's saved for an exact set of displays in a specific left-to-right order. Recalibrate after moving your seat or a monitor. Two identical monitors without serial numbers are told apart by display ID, which can change when they reconnect, so they may ask for recalibration.
-- **Any face counts.** Glance tracks the largest face in view and can't tell people apart. Someone else at your desk steers focus, and anyone passing in front of the camera counts as you coming back, which can wake the displays.
-- **Without Accessibility, focus is per app.** If one app has windows on several displays, the window that comes to front may be on the wrong display. If the target display has no normal windows (for example an empty desktop), only the pointer moves. Windows in other Spaces or behind a full-screen app aren't considered.
-- **Lighting and camera position matter.** In low light, with strong glare on glasses, or with the camera off to one side, faces are missed and switching pauses until one is found again.
-- **Camera and sleep.** The green camera indicator is on whenever Glance is tracking. With **Wake Displays When I Return** on, the camera also runs while the displays sleep, and that keeps the Mac awake.
-- **Lid closed.** The built-in camera isn't available, so Glance falls back to any other connected camera (untested).
-- **Icon with 4+ displays.** Pupil positions get close together. The menu's first line always names the focused display exactly.
-- **Packaging.** Built and signed locally (your development certificate or ad hoc). It isn't notarized and doesn't launch at login.
+- **Left and right only.** Glance can't tell apart displays stacked one above the other.
+- **Head turns beat eye movements.** At webcam resolution, eyes moving alone give a weak signal. The more displays side by side, the smaller the turn between neighbours.
+- **Any face counts.** Glance can't tell people apart. Someone else at your desk can steer focus, and a passer-by can count as you coming back.
+- **Without Accessibility, focus is per app.** If one app has windows on two displays, the wrong one may come forward. Windows in other Spaces or behind full-screen apps aren't considered.
+- **Light and camera position matter.** In dim light or with heavy glare on glasses, faces can be missed. Switching then pauses until you're found again.
+- **The camera keeps the Mac awake.** While the camera runs, macOS won't sleep. That includes **Wake Displays When I Return** keeping it on while the screens are asleep.
+- **With 4 or more displays, the icon is approximate.** The menu always names the focused display exactly.
+- **Not notarized and no launch at login (yet).** See [Install](#install) for the one-time "Open Anyway" step. Each new version is a new unsigned build, so macOS asks for camera access again after an update.
+
+## Development
+
+```sh
+swift test       # unit tests for the gaze, calibration and presence logic
+./build.sh       # build/Glance.app (uses your Apple Development identity if you have one, otherwise ad hoc)
+./package.sh     # build/Glance-<version>.dmg, ad hoc signed
+```
+
+Watch Glance's decisions live:
+
+```sh
+/usr/bin/log stream --predicate 'subsystem == "local.glance"'
+# Glance focused DELL U2720Q because you looked there (yaw -0.84, pupil 0.02)
+```
+
+In zsh, plain `log` is a built-in shell command, so use the full path.
+
+| Path | What's there |
+|---|---|
+| `Sources/GlanceCore` | Pure logic with no UI: calibration, the gaze tracker, presence |
+| `Sources/Glance` | The app: camera and Vision, focusing, calibration overlay, menu, icon |
+| `Tests/GlanceCoreTests` | Unit tests for `GlanceCore` |
+| `docs/TESTING.md` | What's tested automatically, what was verified by hand, and what hasn't been yet |
+
+Issues and pull requests are welcome, especially reports from setups with three or more displays, external webcams, or the lid closed.
+
+## License
+
+[MIT](LICENSE)
