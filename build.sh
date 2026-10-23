@@ -6,9 +6,10 @@ cd "$(dirname "$0")"
 swift build -c release
 APP=build/Glance.app
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$(swift build -c release --show-bin-path)/Glance" "$APP/Contents/MacOS/"
 cp Resources/Info.plist "$APP/Contents/"
+cp Resources/AppIcon.icns "$APP/Contents/Resources/"
 # Drop debug symbols: they hold absolute build paths (e.g. /Users/<you>/...) that shouldn't ship.
 strip -S -x "$APP/Contents/MacOS/Glance"
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Glance now has an app icon (an eye glancing to the side) in Finder, Launchpad and the camera-permission prompt. `scripts/make-icon.swift` regenerates it.
+
 ## 1.0.0
 
 First release.

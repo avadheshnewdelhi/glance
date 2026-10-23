@@ -141,6 +141,7 @@ In zsh, plain `log` is a built-in shell command, so use the full path.
 | `Sources/GlanceCore` | Pure logic with no UI: calibration, the gaze tracker, presence |
 | `Sources/Glance` | The app: camera and Vision, focusing, calibration overlay, menu, icon |
 | `Tests/GlanceCoreTests` | Unit tests for `GlanceCore` |
+| `scripts/make-icon.swift` | Draws the app icon and writes `Resources/AppIcon.icns` |
 | `docs/TESTING.md` | What's tested automatically, what was verified by hand, and what hasn't been yet |
 
 Issues and pull requests are welcome, especially reports from setups with three or more displays, external webcams, or the lid closed.
