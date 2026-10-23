@@ -163,10 +163,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let change = presence.update(faceVisible: visible, at: time)
         switch change {
         case .returned:
-            log.notice("Back at the seat")
+            log.notice("Glance sees you again, switching resumed")
             if screensAsleep && wakeOnReturn { wakeDisplays() }
         case .left:
-            log.notice("Away from the seat, switching paused")
+            log.notice("Glance paused switching: no one in view for 5 s")
         case nil:
             break
         }
@@ -180,14 +180,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let switched = tracker.update(sample, at: time)
         if tracker.current != previous { updateIcon() }
         if let key = switched, let screen = NSScreen.screens.first(where: { $0.displayKey == key }) {
-            log.notice("Gaze moved to \(screen.localizedName, privacy: .public) (yaw \(sample.yaw, format: .fixed(precision: 2)), pupil \(sample.pupil, format: .fixed(precision: 2)))")
+            log.notice("Glance focused \(screen.localizedName, privacy: .public) because you looked there (yaw \(sample.yaw, format: .fixed(precision: 2)), pupil \(sample.pupil, format: .fixed(precision: 2)))")
             DisplayFocuser.focus(screen, movePointer: movePointer)
         }
     }
 
     private func wakeDisplays() {
         let result = IOPMAssertionDeclareUserActivity("Glance: user returned to the seat" as CFString, kIOPMUserActiveLocal, &activityID)
-        log.notice("Waking displays: \(result == kIOReturnSuccess ? "ok" : "failed \(result)", privacy: .public)")
+        log.notice("Glance woke the displays: \(result == kIOReturnSuccess ? "ok" : "failed \(result)", privacy: .public)")
     }
 
     // MARK: Calibration
@@ -210,13 +210,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             calibrator = nil
             switch outcome {
             case .done(let result):
-                log.notice("Calibrated \(result.layout.count) displays, separation \(result.separation, format: .fixed(precision: 1))")
+                log.notice("Glance calibrated \(result.layout.count) displays, separation \(result.separation, format: .fixed(precision: 1))")
                 calibration = result
                 enabled = true
             case .cancelled:
                 break
             case .failed(let message):
-                log.error("Calibration failed: \(message, privacy: .public)")
+                log.error("Glance calibration failed: \(message, privacy: .public)")
                 showAlert("Calibration didn't finish", message)
             }
             refresh()
