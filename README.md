@@ -33,7 +33,7 @@ Everything runs on your Mac. Glance has no network access at all, and macOS enfo
 
 ### Download
 
-1. Download **`Glance-x.y.z.dmg`** from the [latest release](https://github.com/avadheshnewdelhi/glance/releases/latest).
+1. Download **[Glance.dmg](https://github.com/avadheshnewdelhi/glance/releases/latest/download/Glance.dmg)** from the [latest release](https://github.com/avadheshnewdelhi/glance/releases/latest).
 2. Open the DMG and drag **Glance** into **Applications**.
 3. Open Glance. The first time, macOS will say it can't verify the developer, because Glance is a free open-source app that isn't notarized by Apple. To allow it:
    - open **System Settings › Privacy & Security**, scroll down and click **Open Anyway** next to the Glance message; **or**
@@ -124,7 +124,7 @@ flowchart LR
 ```sh
 swift test       # unit tests for the gaze, calibration and presence logic
 ./build.sh       # build/Glance.app (uses your Apple Development identity if you have one, otherwise ad hoc)
-./package.sh     # build/Glance-<version>.dmg, ad hoc signed
+./package.sh     # build/Glance.dmg, ad hoc signed
 ```
 
 Watch Glance's decisions live:
