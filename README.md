@@ -37,7 +37,7 @@ Everything runs on your Mac. Glance has no network access at all, and macOS enfo
 brew install --cask avadheshnewdelhi/tap/glance
 ```
 
-Homebrew verifies the download's checksum and installs Glance ready to open, without the "Open Anyway" step below.
+Homebrew verifies the download's checksum and installs Glance ready to open, without the "Open Anyway" step below. The cask lives in [avadheshnewdelhi/homebrew-tap](https://github.com/avadheshnewdelhi/homebrew-tap).
 
 ### Download
 

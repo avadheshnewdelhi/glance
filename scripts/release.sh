@@ -25,7 +25,7 @@ $CHANGES
 
 ## Install or update
 
-- **Homebrew:** \`brew install --cask avadheshnewdelhi/tap/glance\`, or \`brew upgrade --cask glance\` if it's already installed.
+- **Homebrew:** \`brew install --cask avadheshnewdelhi/tap/glance\`, or \`brew upgrade --cask glance\` if it's already installed ([tap](https://github.com/$TAP)).
 - **Manual:** download **Glance.dmg** below and drag Glance into Applications. Glance isn't notarized by Apple, so allow the first launch in **System Settings › Privacy & Security › Open Anyway**.
 
 Each build has a new signature, so macOS asks for camera access again after an update. Requires macOS 14 or later.
